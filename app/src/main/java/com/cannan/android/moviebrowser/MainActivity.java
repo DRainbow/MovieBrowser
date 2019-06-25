@@ -7,8 +7,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.VideoView;
 
+import com.cannan.android.moviebrowser.adapters.CommonSnapHelper;
+import com.cannan.android.moviebrowser.adapters.ImageAdapter;
 import com.cannan.android.moviebrowser.data.Movie;
 import com.cannan.android.moviebrowser.viewmodels.MovieViewModel;
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -30,21 +32,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private ViewPager mViewPager;
     private RecyclerView mRecyclerView;
 
+    private RecyclerView.Adapter mAdapter;
+
     private PagerAdapter mPagerAdapter;
 
     private List<Movie> mMovieList = new ArrayList<>();
 
     private MovieViewModel mMovieViewModel;
 
-    private List<View> mViews = new ArrayList<>();
-    /**
-     * 视频控件合集
-     */
-    private List<VideoView> mVideoViewList = new ArrayList<>();
-
     private List<MovieView> mCacheView = new ArrayList<>();
-
-//    private MoviePlayer mPlayer = new MoviePlayer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +55,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setSupportActionBar(toolbar);
 
         assignViews();
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
+        mRecyclerView.setAdapter(mAdapter);
+
+        CommonSnapHelper mCardScaleHelper = new CommonSnapHelper();
+        mCardScaleHelper.setCurrentItemPos(0);
+        mCardScaleHelper.attachToRecyclerView(mRecyclerView);
 
         mMovieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
         mMovieViewModel.getAllMovies().observe(this, new Observer<List<Movie>>() {
@@ -75,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
                 mViewPager.setCurrentItem(0);
                 mCacheView.get(0).setFirstStart();
+
+                mAdapter.notifyDataSetChanged();
 
 //                mPagerAdapter.notifyDataSetChanged();
 //                mViewPager.setCurrentItem(0);
