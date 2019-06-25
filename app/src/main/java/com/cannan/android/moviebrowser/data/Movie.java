@@ -1,4 +1,4 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.data;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

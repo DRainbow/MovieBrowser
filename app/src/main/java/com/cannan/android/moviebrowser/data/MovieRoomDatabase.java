@@ -1,9 +1,9 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.data;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.google.gson.Gson;
+import com.cannan.android.moviebrowser.net.MovieService;
 
 import java.io.IOException;
 import java.util.List;
@@ -72,7 +72,7 @@ public abstract class MovieRoomDatabase extends RoomDatabase {
             Call<List<Movie>> call = service.listMoives();
             try {
                 List<Movie> listMovies = call.execute().body();
-                System.out.println("获取网络数据成功" + new Gson().toJson(listMovies));
+                System.out.println("Retrofit execute has success!");
                 mDao.insert(listMovies);
             } catch (IOException e) {
                 e.printStackTrace();

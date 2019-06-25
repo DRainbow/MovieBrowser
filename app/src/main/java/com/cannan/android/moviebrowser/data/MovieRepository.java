@@ -1,4 +1,4 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.data;
 
 import android.app.Application;
 import android.os.AsyncTask;
@@ -29,7 +29,7 @@ public class MovieRepository {
         return mAllMovies;
     }
 
-    void insert(Movie movie) {
+    public void insert(Movie movie) {
         new insertAsyncTask(mMovieDao).execute(movie);
     }
 

@@ -1,6 +1,9 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.viewmodels;
 
 import android.app.Application;
+
+import com.cannan.android.moviebrowser.data.Movie;
+import com.cannan.android.moviebrowser.data.MovieRepository;
 
 import java.util.List;
 
@@ -26,11 +29,11 @@ public class MovieViewModel extends AndroidViewModel {
         mAllMovies = mRepository.getAllMovies();
     }
 
-    LiveData<List<Movie>> getAllMovies() {
+    public LiveData<List<Movie>> getAllMovies() {
         return mAllMovies;
     }
 
-    void insert(Movie movie) {
+    public void insert(Movie movie) {
         mRepository.insert(movie);
     }
 }

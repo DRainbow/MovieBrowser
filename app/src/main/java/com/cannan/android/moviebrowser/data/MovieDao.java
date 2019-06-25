@@ -1,10 +1,11 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.data;
 
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 /**
@@ -20,14 +21,14 @@ public interface MovieDao {
      *
      * @param movie
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Movie movie);
 
     /**
      *
      * @param movies
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(List<Movie> movies);
 
     /**
