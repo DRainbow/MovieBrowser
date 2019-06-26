@@ -1,14 +1,10 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.recycler;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.cannan.android.moviebrowser.gallery.ScrollManager;
-
 import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -17,27 +13,27 @@ import androidx.recyclerview.widget.RecyclerView;
  * @author: Cannan
  * @date: 2019-06-26 20:29
  */
-public class GalleryRecyclerView extends RecyclerView implements GalleryItemDecoration.OnItemSizeMeasuredListener {
+public class CustomRecyclerView extends RecyclerView implements CustomItemDecoration.OnItemSizeMeasuredListener {
 
     private int mInitPos = -1;
 
     private ScrollManager mScrollManager;
 
-    private GalleryItemDecoration mDecoration;
+    private CustomItemDecoration mDecoration;
 
-    public GalleryItemDecoration getDecoration() {
+    public CustomItemDecoration getDecoration() {
         return mDecoration;
     }
 
-    public GalleryRecyclerView(Context context) {
+    public CustomRecyclerView(Context context) {
         this(context, null);
     }
 
-    public GalleryRecyclerView(Context context, @Nullable AttributeSet attrs) {
+    public CustomRecyclerView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public GalleryRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public CustomRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         attachDecoration();
@@ -61,23 +57,9 @@ public class GalleryRecyclerView extends RecyclerView implements GalleryItemDeco
 
 
     private void attachDecoration() {
-        mDecoration = new GalleryItemDecoration();
+        mDecoration = new CustomItemDecoration();
         mDecoration.setOnItemSizeMeasuredListener(this);
         addItemDecoration(mDecoration);
-    }
-
-
-    public int getOrientation() {
-
-        if (getLayoutManager() instanceof LinearLayoutManager) {
-            if (getLayoutManager() instanceof GridLayoutManager) {
-                throw new RuntimeException("请设置LayoutManager为LinearLayoutManager");
-            } else {
-                return ((LinearLayoutManager) getLayoutManager()).getOrientation();
-            }
-        } else {
-            throw new RuntimeException("请设置LayoutManager为LinearLayoutManager");
-        }
     }
 
     public int getScrolledPosition() {
@@ -89,12 +71,10 @@ public class GalleryRecyclerView extends RecyclerView implements GalleryItemDeco
     }
 
     /**
-     *
-     *
      * @param i int
      * @return GalleryRecyclerView
      */
-    public GalleryRecyclerView initPosition(@IntRange(from = 0) int i) {
+    public CustomRecyclerView initPosition(@IntRange(from = 0) int i) {
         if (i >= getAdapter().getItemCount()) {
             i = getAdapter().getItemCount() - 1;
         } else if (i < 0) {
@@ -109,7 +89,7 @@ public class GalleryRecyclerView extends RecyclerView implements GalleryItemDeco
      *
      * @return GalleryRecyclerView
      */
-    public GalleryRecyclerView setUp() {
+    public CustomRecyclerView setUp() {
         if (getAdapter().getItemCount() <= 0) {
             return this;
         }
@@ -128,11 +108,7 @@ public class GalleryRecyclerView extends RecyclerView implements GalleryItemDeco
         if (mInitPos == 0) {
             scrollToPosition(0);
         } else {
-            if (getOrientation() == LinearLayoutManager.HORIZONTAL) {
-                smoothScrollBy(mInitPos * size, 0);
-            } else {
-                smoothScrollBy(0, mInitPos * size);
-            }
+            smoothScrollBy(mInitPos * size, 0);
         }
         mInitPos = -1;
     }
@@ -144,7 +120,7 @@ public class GalleryRecyclerView extends RecyclerView implements GalleryItemDeco
      * @param leftPageVisibleWidth
      * @return GalleryRecyclerView
      */
-    public GalleryRecyclerView initPageParams(int pageMargin, int leftPageVisibleWidth) {
+    public CustomRecyclerView initPageParams(int pageMargin, int leftPageVisibleWidth) {
         mDecoration.mPageMargin = pageMargin;
         mDecoration.mLeftPageVisibleWidth = leftPageVisibleWidth;
         return this;

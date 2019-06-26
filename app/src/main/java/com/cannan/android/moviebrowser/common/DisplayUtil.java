@@ -54,22 +54,23 @@ public class DisplayUtil {
 
     /**
      * 获取屏幕尺寸
+     *
      * @param context Context
      * @return double
      */
-    public static double getScreenInch(Context context){
+    public static double getScreenInch(Context context) {
         DisplayMetrics dm = new DisplayMetrics();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         wm.getDefaultDisplay().getMetrics(dm);
-        int width=dm.widthPixels;
-        int height=dm.heightPixels;
-        int dens=dm.densityDpi;
-        double wi=(double)width/(double)dens;
-        double hi=(double)height/(double)dens;
-        double x = Math.pow(wi,2);
-        double y = Math.pow(hi,2);
-        double screenInches = Math.sqrt(x+y);
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        int dens = dm.densityDpi;
+        double wi = (double) width / (double) dens;
+        double hi = (double) height / (double) dens;
+        double x = Math.pow(wi, 2);
+        double y = Math.pow(hi, 2);
+        double screenInches = Math.sqrt(x + y);
         return screenInches;
     }
 }

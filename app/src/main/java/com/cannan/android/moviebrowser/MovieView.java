@@ -34,8 +34,6 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
 
     private String mUri;
 
-    private boolean firststart = false;
-
     private int surfaceHeight, surfaceWidth;
 
     private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
@@ -137,11 +135,6 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
         }
     }
 
-    public void setFirstStart() {
-        firststart = true;
-    }
-
-
     public void measureSize() {
         int mVideoWidth = mMediaPlayer.getVideoWidth();
         int mVideoHeight = mMediaPlayer.getVideoHeight();
@@ -170,7 +163,6 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
                 finalwidth = surfaceWidth;
             }
 
-            Log.e("change size", "final width=" + finalwidth + " final height=" + finalheight + " url=" + mUri);
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mSurfaceView.getLayoutParams();
             layoutParams.height = finalheight;
             layoutParams.width = finalwidth;
@@ -186,16 +178,11 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
     }
 
     private void getSurfaceRect() {
-        int height = 0;
-        int resourceid = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceid > 0) {
-            height = mContext.getResources().getDimensionPixelSize(resourceid);
-        }
         DisplayMetrics dm = new DisplayMetrics();
         dm = mContext.getApplicationContext().getResources().getDisplayMetrics();
         int screenWidth = dm.widthPixels;
         int screenHeight = dm.heightPixels;
-        surfaceHeight = screenHeight - height;
+        surfaceHeight = screenHeight;
         surfaceWidth = screenWidth;
     }
 

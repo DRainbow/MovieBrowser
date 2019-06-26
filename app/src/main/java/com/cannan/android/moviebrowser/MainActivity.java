@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.cannan.android.moviebrowser.adapters.ImageAdapter;
 import com.cannan.android.moviebrowser.common.DisplayUtil;
 import com.cannan.android.moviebrowser.data.Movie;
+import com.cannan.android.moviebrowser.recycler.CustomRecyclerView;
 import com.cannan.android.moviebrowser.viewmodels.MovieViewModel;
 import com.cannan.android.moviebrowser.viewmodels.TaskViewModel;
 import com.google.gson.Gson;
@@ -30,7 +31,7 @@ import androidx.viewpager.widget.ViewPager;
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private ViewPager mViewPager;
-    private GalleryRecyclerView mRecyclerView;
+    private CustomRecyclerView mRecyclerView;
 
     private RecyclerView.Adapter mAdapter;
 
@@ -84,16 +85,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 initAdapter();
 
                 mViewPager.setCurrentItem(0);
-                mCacheView.get(0).setFirstStart();
-
                 mAdapter.notifyDataSetChanged();
-
-//                mPagerAdapter.notifyDataSetChanged();
-//                mViewPager.setCurrentItem(0);
-
-//                if (mVideoViewList.get(0) != null) {
-//                    mVideoViewList.get(0).start();
-//                }
             }
         });
 

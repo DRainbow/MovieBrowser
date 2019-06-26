@@ -1,4 +1,4 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.recycler;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -9,12 +9,12 @@ import com.cannan.android.moviebrowser.common.DisplayUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * @ClassName: GalleryItemDecoration
+ * @ClassName: CustomItemDecoration
  * @Description:
  * @author: Cannan
  * @date: 2019-06-26 20:32
  */
-public class GalleryItemDecoration extends RecyclerView.ItemDecoration {
+public class CustomItemDecoration extends RecyclerView.ItemDecoration {
 
     public int mPageMargin = 0;
 
@@ -22,9 +22,9 @@ public class GalleryItemDecoration extends RecyclerView.ItemDecoration {
 
     public int mItemConsumeX = 0;
 
-    private GalleryItemDecoration.OnItemSizeMeasuredListener mOnItemSizeMeasuredListener;
+    private CustomItemDecoration.OnItemSizeMeasuredListener mOnItemSizeMeasuredListener;
 
-    public GalleryItemDecoration() {
+    public CustomItemDecoration() {
     }
 
     @Override
@@ -106,7 +106,7 @@ public class GalleryItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    public void setOnItemSizeMeasuredListener(GalleryItemDecoration.OnItemSizeMeasuredListener itemSizeMeasuredListener) {
+    public void setOnItemSizeMeasuredListener(CustomItemDecoration.OnItemSizeMeasuredListener itemSizeMeasuredListener) {
         this.mOnItemSizeMeasuredListener = itemSizeMeasuredListener;
     }
 

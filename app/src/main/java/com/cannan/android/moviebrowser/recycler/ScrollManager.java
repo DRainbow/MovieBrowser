@@ -1,9 +1,8 @@
-package com.cannan.android.moviebrowser.gallery;
+package com.cannan.android.moviebrowser.recycler;
 
 import android.view.View;
 
 import com.cannan.android.moviebrowser.common.DisplayUtil;
-import com.cannan.android.moviebrowser.GalleryRecyclerView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class ScrollManager {
 
-    private GalleryRecyclerView mGalleryRecyclerView;
+    private CustomRecyclerView mCustomRecyclerView;
 
     private int mPosition = 0;
 
@@ -23,18 +22,18 @@ public class ScrollManager {
 
     private RecyclerView.OnScrollListener mListener;
 
-    public ScrollManager(GalleryRecyclerView mGalleryRecyclerView) {
-        this.mGalleryRecyclerView = mGalleryRecyclerView;
+    public ScrollManager(CustomRecyclerView mCustomRecyclerView) {
+        this.mCustomRecyclerView = mCustomRecyclerView;
     }
 
     public void initScrollListener(RecyclerView.OnScrollListener listener) {
         mListener = listener;
 
-        ScrollManager.GalleryScrollerListener mScrollerListener = new ScrollManager.GalleryScrollerListener();
-        mGalleryRecyclerView.addOnScrollListener(mScrollerListener);
+        CustomScrollerListener mScrollerListener = new CustomScrollerListener();
+        mCustomRecyclerView.addOnScrollListener(mScrollerListener);
     }
 
-    class GalleryScrollerListener extends RecyclerView.OnScrollListener {
+    class CustomScrollerListener extends RecyclerView.OnScrollListener {
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -47,7 +46,7 @@ public class ScrollManager {
     }
 
     public void updateConsume() {
-        mConsumeX += DisplayUtil.dp2px(mGalleryRecyclerView.getDecoration().mLeftPageVisibleWidth + mGalleryRecyclerView.getDecoration().mPageMargin * 2);
+        mConsumeX += DisplayUtil.dp2px(mCustomRecyclerView.getDecoration().mLeftPageVisibleWidth + mCustomRecyclerView.getDecoration().mPageMargin * 2);
     }
 
     private void onHorizontalScroll(final RecyclerView recyclerView, final int dx) {
@@ -56,7 +55,7 @@ public class ScrollManager {
         recyclerView.post(new Runnable() {
             @Override
             public void run() {
-                int shouldConsumeX = mGalleryRecyclerView.getDecoration().mItemConsumeX;
+                int shouldConsumeX = mCustomRecyclerView.getDecoration().mItemConsumeX;
                 float offset = (float) mConsumeX / (float) shouldConsumeX;
                 float percent = offset - ((int) offset);
                 System.out.println("---- 当前页移动的百分值 " + percent + " ----");
