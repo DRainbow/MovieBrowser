@@ -21,14 +21,14 @@ public interface MovieDao {
      *
      * @param movie
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Movie movie);
 
     /**
      *
      * @param movies
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(List<Movie> movies);
 
     /**

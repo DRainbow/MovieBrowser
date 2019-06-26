@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.cannan.android.moviebrowser.common.DisplayUtil;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -36,6 +37,14 @@ public class ScrollManager {
     class CustomScrollerListener extends RecyclerView.OnScrollListener {
 
         @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (mListener != null) {
+                mListener.onScrollStateChanged(recyclerView, newState);
+            }
+        }
+
+        @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             onHorizontalScroll(recyclerView, dx);
@@ -49,17 +58,15 @@ public class ScrollManager {
         mConsumeX += DisplayUtil.dp2px(mCustomRecyclerView.getDecoration().mLeftPageVisibleWidth + mCustomRecyclerView.getDecoration().mPageMargin * 2);
     }
 
-    private void onHorizontalScroll(final RecyclerView recyclerView, final int dx) {
+    public void onHorizontalScroll(final RecyclerView recyclerView, final int dx) {
         mConsumeX += dx;
 
         recyclerView.post(new Runnable() {
             @Override
             public void run() {
                 int shouldConsumeX = mCustomRecyclerView.getDecoration().mItemConsumeX;
-                float offset = (float) mConsumeX / (float) shouldConsumeX;
-                float percent = offset - ((int) offset);
-                System.out.println("---- 当前页移动的百分值 " + percent + " ----");
-
+                float offset = (float) (shouldConsumeX + mConsumeX) / (float) shouldConsumeX;
+                float percent = (float) Math.max(Math.abs(offset) * 1.0 / shouldConsumeX, 0.0001);
                 mPosition = (int) offset;
                 onScrollChanged(recyclerView, mPosition, percent);
             }

@@ -3,12 +3,11 @@ package com.cannan.android.moviebrowser.recycler;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * @ClassName: GalleryRecyclerView
+ * @ClassName: CustomRecyclerView
  * @Description:
  * @author: Cannan
  * @date: 2019-06-26 20:29
@@ -35,7 +34,6 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
 
     public CustomRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
         attachDecoration();
     }
 
@@ -71,23 +69,9 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
     }
 
     /**
-     * @param i int
-     * @return GalleryRecyclerView
-     */
-    public CustomRecyclerView initPosition(@IntRange(from = 0) int i) {
-        if (i >= getAdapter().getItemCount()) {
-            i = getAdapter().getItemCount() - 1;
-        } else if (i < 0) {
-            i = 0;
-        }
-        mInitPos = i;
-        return this;
-    }
-
-    /**
      * 装载
      *
-     * @return GalleryRecyclerView
+     * @return CustomRecyclerView
      */
     public CustomRecyclerView setUp() {
         if (getAdapter().getItemCount() <= 0) {
@@ -96,16 +80,15 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
 
         smoothScrollToPosition(0);
         mScrollManager.updateConsume();
-
         return this;
     }
 
     @Override
     public void onItemSizeMeasured(int size) {
-        if (mInitPos < 0) {
+        if (0 > mInitPos) {
             return;
         }
-        if (mInitPos == 0) {
+        if (0 == mInitPos) {
             scrollToPosition(0);
         } else {
             smoothScrollBy(mInitPos * size, 0);
@@ -118,7 +101,7 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
      *
      * @param pageMargin
      * @param leftPageVisibleWidth
-     * @return GalleryRecyclerView
+     * @return CustomRecyclerView
      */
     public CustomRecyclerView initPageParams(int pageMargin, int leftPageVisibleWidth) {
         mDecoration.mPageMargin = pageMargin;
