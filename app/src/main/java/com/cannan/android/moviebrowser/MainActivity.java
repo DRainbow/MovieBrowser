@@ -3,15 +3,14 @@ package com.cannan.android.moviebrowser;
 import android.Manifest;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cannan.android.moviebrowser.adapters.CommonSnapHelper;
 import com.cannan.android.moviebrowser.adapters.ImageAdapter;
+import com.cannan.android.moviebrowser.common.DisplayUtil;
 import com.cannan.android.moviebrowser.data.Movie;
 import com.cannan.android.moviebrowser.viewmodels.MovieViewModel;
+import com.cannan.android.moviebrowser.viewmodels.TaskViewModel;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -30,7 +30,7 @@ import androidx.viewpager.widget.ViewPager;
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private ViewPager mViewPager;
-    private RecyclerView mRecyclerView;
+    private GalleryRecyclerView mRecyclerView;
 
     private RecyclerView.Adapter mAdapter;
 
@@ -39,8 +39,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private List<Movie> mMovieList = new ArrayList<>();
 
     private MovieViewModel mMovieViewModel;
+    private TaskViewModel mTaskViewModel;
 
     private List<MovieView> mCacheView = new ArrayList<>();
+
+    private boolean isInitiativeSlide = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +65,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
         mRecyclerView.setAdapter(mAdapter);
 
-        CommonSnapHelper mCardScaleHelper = new CommonSnapHelper();
-        mCardScaleHelper.setCurrentItemPos(0);
-        mCardScaleHelper.attachToRecyclerView(mRecyclerView);
+        LinearSnapHelper mLinearSnapHelper = new LinearSnapHelper();
+        mLinearSnapHelper.attachToRecyclerView(mRecyclerView);
+
+        mRecyclerView.initPageParams(0, DisplayUtil.px2dp(this, DisplayUtil.getScreenWidth(this) / 4)).setUp();
 
         mMovieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
         mMovieViewModel.getAllMovies().observe(this, new Observer<List<Movie>>() {
@@ -92,6 +96,66 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 //                }
             }
         });
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (isInitiativeSlide) {
+//                    LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+//                    int position = layoutManager.findFirstVisibleItemPosition();
+//                    int position = mCardScaleHelper.getCurrentItemPos();
+//                    mTaskViewModel.imageScrollToPosition(position);
+                }
+
+                isInitiativeSlide = true;
+            }
+        });
+
+        mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
+        mTaskViewModel.getVideoSlideTask().observe(this, new Observer<Event<Integer>>() {
+            @Override
+            public void onChanged(Event<Integer> integerEvent) {
+                isInitiativeSlide = false;
+                int position = integerEvent.getContentIfNotHandled();
+                mRecyclerView.smoothScrollToPosition(position);
+            }
+        });
+        mTaskViewModel.getImageSlideTask().observe(this, new Observer<Event<Integer>>() {
+            @Override
+            public void onChanged(Event<Integer> integerEvent) {
+                isInitiativeSlide = false;
+                int position = integerEvent.getContentIfNotHandled();
+                mViewPager.setCurrentItem(position, true);
+            }
+        });
+
+        mRecyclerView.initListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    isInitiativeSlide = true;
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (isInitiativeSlide) {
+                    int position = mRecyclerView.getScrolledPosition();
+                    mTaskViewModel.imageScrollToPosition(position);
+                }
+            }
+        });
     }
 
     private void assignViews() {
@@ -114,14 +178,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             @NonNull
             @Override
             public Object instantiateItem(@NonNull ViewGroup container, int position) {
-//                View root = mViews.get(position);
-//                if (root.getParent() != null) {
-//                    ((ViewGroup) root.getParent()).removeView(root);
-//                }
-//                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(200, 200);
-//                root.setLayoutParams(lp);
-//                container.addView(root, 0);
-
                 MovieView view = mCacheView.get(position);
                 view.initMedia();
                 container.addView(view, 0);
@@ -145,36 +201,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mMovieList.addAll(movies);
 
         for (Movie movie : movies) {
-//            View root = View.inflate(MainActivity.this, R.layout.page_layout, null);
-//            MovieView videoView = root.findViewById(R.id.mVideoView);
-//            videoView.setUri(movie.getVideoUrl());
-//            mCacheView.add(videoView);
-//            mViews.add(root);
             MovieView view = new MovieView(MainActivity.this, movie.getVideoUrl());
             mCacheView.add(view);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -196,21 +225,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 view.pause();
             }
         }
+
+        if (isInitiativeSlide) {
+            mTaskViewModel.videoScrollToPosition(position);
+        }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
         System.out.println("---- onPageScrollStateChanged ----");
-
-//        if (state == 0) {
-//        } else if (state == 1) {
-//            mCacheView.get(CurrentPage % MaxCount).pause();
-//            Log.e("scrolled", "page num=" + CurrentPage);
-//        } else if (state == 2) {
-//            //SCROLL BACK RESUME
-//            if (CurrentPage == SwipePage) {
-//                mediaViewList.get(CurrentPage % MaxCount).start();
-//            }
-//        }
     }
 }

@@ -27,9 +27,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageVH> {
     private Context mContext;
 
     private List<Movie> mMovieList = new ArrayList<>();
-
-    private CardAdapterHelper mCardAdapterHelper = new CardAdapterHelper();
-
+    
     public ImageAdapter(Context context, List<Movie> movieList) {
         mContext = context;
         mMovieList = movieList;
@@ -39,13 +37,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageVH> {
     @Override
     public ImageVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image, parent, false);
-        mCardAdapterHelper.onCreateViewHolder(parent, itemView);
         return new ImageVH(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImageVH holder, int position) {
-        mCardAdapterHelper.onBindViewHolder(holder.itemView, position, getItemCount());
         Glide.with(mContext.getApplicationContext())
                 .load(mMovieList.get(position).getImageUrl())
                 .fitCenter()

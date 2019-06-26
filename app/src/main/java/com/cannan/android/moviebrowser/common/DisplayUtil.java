@@ -1,6 +1,7 @@
-package com.cannan.android.moviebrowser;
+package com.cannan.android.moviebrowser.common;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -13,14 +14,18 @@ import android.view.WindowManager;
  */
 public class DisplayUtil {
 
-    public static int px2sp(Context context, float pxValue) {
-        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
-        return (int) (pxValue / fontScale + 0.5f);
-    }
-
     public static int dp2px(Context context, int dp) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return (int) ((dp * displayMetrics.density) + 0.5);
+    }
+
+    public static int dp2px(int dp) {
+        return (int) ((dp * Resources.getSystem().getDisplayMetrics().density) + 0.5);
+    }
+
+    public static int px2dp(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 
     public static int dp2px(Context context, double dp) {
@@ -30,8 +35,6 @@ public class DisplayUtil {
 
     public static int getScreenWidth(Context context) {
         DisplayMetrics dm = new DisplayMetrics();
-        //((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
-
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         display.getMetrics(dm);
