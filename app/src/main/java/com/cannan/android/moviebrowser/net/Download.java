@@ -3,6 +3,8 @@ package com.cannan.android.moviebrowser.net;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.cannan.android.moviebrowser.common.ThreadPoolFactory;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -54,8 +56,7 @@ public class Download {
                         }
                     }
                 };
-                // TODO: 2019-06-25 ThreadPool
-                new Thread(runnable).start();
+                ThreadPoolFactory.getDownLoadThreadPool().execute(runnable);
             }
 
             @Override
