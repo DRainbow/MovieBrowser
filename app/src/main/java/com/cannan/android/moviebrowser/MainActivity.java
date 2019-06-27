@@ -82,20 +82,19 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-
-//                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
-//                    int position = mRecyclerView.getScrolledPosition();
-//                    mTaskViewModel.imageScrollToPosition(position);
-//                }
+                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    if (isRecyclerScroll) {
+                        int position = mRecyclerView.getScrolledPosition();
+                        System.out.println("---- [RecyclerView] onScrollStateChanged to position [" + position + "] ----");
+                        mTaskViewModel.imageScrollToPosition(position);
+                    }
+                }
             }
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (isRecyclerScroll) {
-                    int position = mRecyclerView.getScrolledPosition();
-                    mTaskViewModel.imageScrollToPosition(position);
-                }
+                System.out.println("---- [RecyclerView] onScrolled to position [" + mRecyclerView.getScrolledPosition() + "] ----");
             }
         });
     }
@@ -180,8 +179,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             }
         }
 
+        if (!isRecyclerScroll) {
+            mTaskViewModel.videoScrollToPosition(position);
+        }
+
         isRecyclerScroll = false;
-        mTaskViewModel.videoScrollToPosition(position);
     }
 
     @Override
