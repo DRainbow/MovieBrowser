@@ -66,9 +66,7 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration {
 
         int leftMargin = position == 0 ? DisplayUtil.dp2px(mHalfWidth + 2 * mPageMargin) : DisplayUtil.dp2px(mPageMargin);
         int rightMargin = position == itemCount - 1 ? DisplayUtil.dp2px(mHalfWidth + 2 * mPageMargin) : DisplayUtil.dp2px(mPageMargin);
-
-        System.out.println("---- [RecyclerView.ItemDecoration] position [" + position + "], left [" + leftMargin + "], right [" + rightMargin + "] ----");
-
+        
         setLayoutParams(itemView, leftMargin, 0, rightMargin, 0, itemNewWidth, itemNewHeight);
     }
 
@@ -106,7 +104,6 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration {
         }
 
         if (mWidthChange || mMarginChange || mHeightChange) {
-            System.out.println("---- [RecyclerView.ItemDecoration] reset params ----");
             itemView.setLayoutParams(lp);
         }
     }

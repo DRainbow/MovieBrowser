@@ -62,20 +62,29 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setSupportActionBar(toolbar);
 
         assignViews();
+        initViews();
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        observe();
+    }
+
+    private void assignViews() {
+        mViewPager = findViewById(R.id.vp_main_top);
+        mRecyclerView = findViewById(R.id.rv_main_bottom);
+    }
+
+    private void initViews() {
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        initAdapter();
+        mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
+        mRecyclerView.setAdapter(mAdapter);
 
-        LinearSnapHelper mLinearSnapHelper = new LinearSnapHelper();
+        final LinearSnapHelper mLinearSnapHelper = new LinearSnapHelper();
         mLinearSnapHelper.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.initPageParams(0, DisplayUtil.px2dp(this, DisplayUtil.getScreenWidth(this) / 4)).setUp();
+
         mRecyclerView.setOnTouchListener(this);
-
-        observe();
-
         mRecyclerView.initListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -84,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 if (RecyclerView.SCROLL_STATE_IDLE == newState) {
                     if (isRecyclerScroll) {
                         int position = mRecyclerView.getScrolledPosition();
-                        System.out.println("---- [RecyclerView] onScrollStateChanged to position [" + position + "] ----");
                         mTaskViewModel.imageScrollToPosition(position);
+
                     }
                 }
             }
@@ -93,9 +102,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                System.out.println("---- [RecyclerView] onScrolled to position [" + mRecyclerView.getScrolledPosition() + "] ----");
             }
-        });
+        }, mLinearSnapHelper);
+
+        mPagerAdapter = new VideoAdapter(mCacheView);
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.addOnPageChangeListener(this);
     }
 
     private void observe() {
@@ -133,20 +145,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 mViewPager.setCurrentItem(position, true);
             }
         });
-    }
-
-    private void assignViews() {
-        mViewPager = findViewById(R.id.vp_main_top);
-        mRecyclerView = findViewById(R.id.rv_main_bottom);
-    }
-
-    private void initAdapter() {
-        mPagerAdapter = new VideoAdapter(mCacheView);
-        mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.addOnPageChangeListener(this);
-
-        mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void initialData(List<Movie> movies) {
@@ -187,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        System.out.println("---- onPageScrollStateChanged ----");
     }
 
     @Override

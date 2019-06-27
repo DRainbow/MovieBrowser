@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 /**
  * @ClassName: CustomRecyclerView
@@ -24,6 +25,8 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
     private ScrollManager mScrollManager;
 
     private CustomItemDecoration mDecoration;
+
+    private SnapHelper mHelper;
 
     public CustomItemDecoration getDecoration() {
         return mDecoration;
@@ -45,8 +48,8 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
         attachDecoration();
     }
 
-    public void initListener(OnScrollListener listener) {
-        mScrollManager = new ScrollManager(mContext, this);
+    public void initListener(OnScrollListener listener, SnapHelper helper) {
+        mScrollManager = new ScrollManager(mContext, this, helper);
         mScrollManager.initScrollListener(listener);
     }
 

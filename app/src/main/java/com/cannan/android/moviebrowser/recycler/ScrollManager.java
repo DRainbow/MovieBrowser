@@ -7,6 +7,7 @@ import com.cannan.android.moviebrowser.common.DisplayUtil;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 /**
  * @ClassName: ScrollManager
@@ -20,15 +21,18 @@ public class ScrollManager {
 
     private CustomRecyclerView mCustomRecyclerView;
 
+    private SnapHelper mHelper;
+
     private int mPosition = 0;
 
     private int mConsumeX = 0;
 
     private RecyclerView.OnScrollListener mListener;
 
-    public ScrollManager(Context context, CustomRecyclerView mCustomRecyclerView) {
+    public ScrollManager(Context context, CustomRecyclerView recyclerView, SnapHelper helper) {
         mContext = context;
-        this.mCustomRecyclerView = mCustomRecyclerView;
+        mCustomRecyclerView = recyclerView;
+        mHelper = helper;
     }
 
     public void initScrollListener(RecyclerView.OnScrollListener listener) {
@@ -71,7 +75,12 @@ public class ScrollManager {
      */
     private void onScrolledChangedCallback() {
         int mOnePageWidth = mCustomRecyclerView.getDecoration().mItemConsumeX;
-        mPosition = (int) ((float) mConsumeX / (float) mOnePageWidth);
+
+        if (mOnePageWidth <= 0) {
+            return;
+        }
+
+        mPosition = mCustomRecyclerView.getLayoutManager().getPosition(mHelper.findSnapView(mCustomRecyclerView.getLayoutManager()));
 
         int offset = mConsumeX - mPosition * mOnePageWidth;
         float percent = (float) Math.max(Math.abs(offset) * 1.0 / mOnePageWidth, 0.0001);
@@ -86,9 +95,6 @@ public class ScrollManager {
         if (mPosition < mCustomRecyclerView.getAdapter().getItemCount() - 1) {
             rightView = mCustomRecyclerView.getLayoutManager().findViewByPosition(mPosition + 1);
         }
-
-        System.out.println("---- [RecyclerView.onScrolled] mPosition [" + mPosition + "], mConsumeX [" + mConsumeX +
-                "], offset [" + offset + "], percent [" + percent + "] ----");
 
         if (leftView != null) {
             leftView.setScaleY((1 - mScale) + percent * mScale);
