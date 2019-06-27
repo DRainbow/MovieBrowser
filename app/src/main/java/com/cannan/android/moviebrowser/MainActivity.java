@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mLinearSnapHelper.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.initPageParams(0, DisplayUtil.px2dp(this, DisplayUtil.getScreenWidth(this) / 4)).setUp();
-
         mRecyclerView.setOnTouchListener(this);
 
         observe();

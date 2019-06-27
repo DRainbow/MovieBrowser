@@ -1,5 +1,6 @@
 package com.cannan.android.moviebrowser.recycler;
 
+import android.content.Context;
 import android.view.View;
 
 import com.cannan.android.moviebrowser.common.DisplayUtil;
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class ScrollManager {
 
+    private Context mContext;
+
     private CustomRecyclerView mCustomRecyclerView;
 
     private int mPosition = 0;
@@ -23,7 +26,8 @@ public class ScrollManager {
 
     private RecyclerView.OnScrollListener mListener;
 
-    public ScrollManager(CustomRecyclerView mCustomRecyclerView) {
+    public ScrollManager(Context context, CustomRecyclerView mCustomRecyclerView) {
+        mContext = context;
         this.mCustomRecyclerView = mCustomRecyclerView;
     }
 
@@ -47,60 +51,65 @@ public class ScrollManager {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            onHorizontalScroll(recyclerView, dx);
+
+            mConsumeX += dx;
+            onScrolledChangedCallback();
+
             if (mListener != null) {
                 mListener.onScrolled(recyclerView, dx, dy);
             }
         }
     }
 
+    /**
+     * 缩放比
+     */
+    private float mScale = 0.4f;
+
+    /**
+     * view 大小随位移事件变化
+     */
+    private void onScrolledChangedCallback() {
+        int mOnePageWidth = mCustomRecyclerView.getDecoration().mItemConsumeX;
+        mPosition = (int) ((float) mConsumeX / (float) mOnePageWidth);
+
+        int offset = mConsumeX - mPosition * mOnePageWidth;
+        float percent = (float) Math.max(Math.abs(offset) * 1.0 / mOnePageWidth, 0.0001);
+
+        View leftView = null;
+        View currentView;
+        View rightView = null;
+        if (mPosition > 0) {
+            leftView = mCustomRecyclerView.getLayoutManager().findViewByPosition(mPosition - 1);
+        }
+        currentView = mCustomRecyclerView.getLayoutManager().findViewByPosition(mPosition);
+        if (mPosition < mCustomRecyclerView.getAdapter().getItemCount() - 1) {
+            rightView = mCustomRecyclerView.getLayoutManager().findViewByPosition(mPosition + 1);
+        }
+
+        System.out.println("---- [RecyclerView.onScrolled] mPosition [" + mPosition + "], mConsumeX [" + mConsumeX +
+                "], offset [" + offset + "], percent [" + percent + "] ----");
+
+        if (leftView != null) {
+            leftView.setScaleY((1 - mScale) + percent * mScale);
+            leftView.setScaleY((1 - mScale) + percent * mScale);
+        }
+        if (currentView != null) {
+            currentView.setScaleX(1 - percent * mScale);
+            currentView.setScaleY(1 - percent * mScale);
+        }
+        if (rightView != null) {
+            rightView.setScaleX((1 - mScale) + percent * mScale);
+            rightView.setScaleY((1 - mScale) + percent * mScale);
+        }
+    }
+
     public void updateConsume() {
-        mConsumeX += DisplayUtil.dp2px(mCustomRecyclerView.getDecoration().mLeftPageVisibleWidth + mCustomRecyclerView.getDecoration().mPageMargin * 2);
+        mConsumeX += DisplayUtil.dp2px(mCustomRecyclerView.getDecoration().mHalfWidth + mCustomRecyclerView.getDecoration().mPageMargin * 2);
     }
 
-    public void onHorizontalScroll(final RecyclerView recyclerView, final int dx) {
-        mConsumeX += dx;
-
-        recyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                int shouldConsumeX = mCustomRecyclerView.getDecoration().mItemConsumeX;
-                float offset = (float) (shouldConsumeX + mConsumeX) / (float) shouldConsumeX;
-                float percent = (float) Math.max(Math.abs(offset) * 1.0 / shouldConsumeX, 0.0001);
-                mPosition = (int) offset;
-                onScrollChanged(recyclerView, mPosition, percent);
-            }
-        });
-
-    }
 
     public int getPosition() {
         return mPosition;
-    }
-
-    private float mAnimFactor = 0.2f;
-
-    public void onScrollChanged(RecyclerView recyclerView, int position, float percent) {
-        View mCurView = recyclerView.getLayoutManager().findViewByPosition(position);
-        View mRightView = recyclerView.getLayoutManager().findViewByPosition(position + 1);
-        View mLeftView = recyclerView.getLayoutManager().findViewByPosition(position - 1);
-        View mRRView = recyclerView.getLayoutManager().findViewByPosition(position + 2);
-
-        if (mLeftView != null) {
-            mLeftView.setScaleX((1 - mAnimFactor) + percent * mAnimFactor);
-            mLeftView.setScaleY((1 - mAnimFactor) + percent * mAnimFactor);
-        }
-        if (mCurView != null) {
-            mCurView.setScaleX(1 - percent * mAnimFactor);
-            mCurView.setScaleY(1 - percent * mAnimFactor);
-        }
-        if (mRightView != null) {
-            mRightView.setScaleX((1 - mAnimFactor) + percent * mAnimFactor);
-            mRightView.setScaleY((1 - mAnimFactor) + percent * mAnimFactor);
-        }
-        if (mRRView != null) {
-            mRRView.setScaleX(1 - percent * mAnimFactor);
-            mRRView.setScaleY(1 - percent * mAnimFactor);
-        }
     }
 }

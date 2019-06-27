@@ -14,7 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class CustomRecyclerView extends RecyclerView implements CustomItemDecoration.OnItemSizeMeasuredListener {
 
-    private int mInitPos = -1;
+    private Context mContext;
+
+    /**
+     * RecyclerView 初始展示位置
+     */
+    private int mInitPos = 0;
 
     private ScrollManager mScrollManager;
 
@@ -26,36 +31,28 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
 
     public CustomRecyclerView(Context context) {
         this(context, null);
+        mContext = context;
     }
 
     public CustomRecyclerView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
+        mContext = context;
     }
 
     public CustomRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
         attachDecoration();
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-    }
-
-
     public void initListener(OnScrollListener listener) {
-        mScrollManager = new ScrollManager(this);
+        mScrollManager = new ScrollManager(mContext, this);
         mScrollManager.initScrollListener(listener);
     }
 
 
     private void attachDecoration() {
-        mDecoration = new CustomItemDecoration();
+        mDecoration = new CustomItemDecoration(mContext);
         mDecoration.setOnItemSizeMeasuredListener(this);
         addItemDecoration(mDecoration);
     }
@@ -105,7 +102,7 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
      */
     public CustomRecyclerView initPageParams(int pageMargin, int leftPageVisibleWidth) {
         mDecoration.mPageMargin = pageMargin;
-        mDecoration.mLeftPageVisibleWidth = leftPageVisibleWidth;
+        mDecoration.mHalfWidth = leftPageVisibleWidth;
         return this;
     }
 }

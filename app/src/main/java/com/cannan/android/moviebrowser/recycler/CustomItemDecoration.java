@@ -1,5 +1,6 @@
 package com.cannan.android.moviebrowser.recycler;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +17,22 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class CustomItemDecoration extends RecyclerView.ItemDecoration {
 
+    private Context mContext;
+
     public int mPageMargin = 0;
 
-    public int mLeftPageVisibleWidth = 0;
+    public int mHalfWidth = 0;
 
     public int mItemConsumeX = 0;
 
     private CustomItemDecoration.OnItemSizeMeasuredListener mOnItemSizeMeasuredListener;
 
-    public CustomItemDecoration() {
+    public CustomItemDecoration(Context context) {
+        mContext = context;
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, final View view, final RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
         final int position = parent.getChildAdapterPosition(view);
@@ -51,7 +55,7 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration {
      * @param itemCount int
      */
     private void setParams(ViewGroup parent, View itemView, int position, int itemCount) {
-        int itemNewWidth = parent.getWidth() - DisplayUtil.dp2px(4 * mPageMargin + 2 * mLeftPageVisibleWidth);
+        int itemNewWidth = parent.getWidth() - DisplayUtil.dp2px(4 * mPageMargin + 2 * mHalfWidth);
         int itemNewHeight = parent.getHeight();
 
         mItemConsumeX = itemNewWidth + DisplayUtil.dp2px(2 * mPageMargin);
@@ -60,10 +64,10 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration {
             mOnItemSizeMeasuredListener.onItemSizeMeasured(mItemConsumeX);
         }
 
-        int leftMargin = position == 0 ? DisplayUtil.dp2px(mLeftPageVisibleWidth + 2 * mPageMargin) :
-                DisplayUtil.dp2px(mPageMargin);
-        int rightMargin = position == itemCount - 1 ? DisplayUtil.dp2px(mLeftPageVisibleWidth + 2 * mPageMargin) :
-                DisplayUtil.dp2px(mPageMargin);
+        int leftMargin = position == 0 ? DisplayUtil.dp2px(mHalfWidth + 2 * mPageMargin) : DisplayUtil.dp2px(mPageMargin);
+        int rightMargin = position == itemCount - 1 ? DisplayUtil.dp2px(mHalfWidth + 2 * mPageMargin) : DisplayUtil.dp2px(mPageMargin);
+
+        System.out.println("---- [RecyclerView.ItemDecoration] position [" + position + "], left [" + leftMargin + "], right [" + rightMargin + "] ----");
 
         setLayoutParams(itemView, leftMargin, 0, rightMargin, 0, itemNewWidth, itemNewHeight);
     }
@@ -102,6 +106,7 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration {
         }
 
         if (mWidthChange || mMarginChange || mHeightChange) {
+            System.out.println("---- [RecyclerView.ItemDecoration] reset params ----");
             itemView.setLayoutParams(lp);
         }
     }
