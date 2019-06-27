@@ -45,9 +45,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private TaskViewModel mTaskViewModel;
 
     /**
-     * 是否主动滑动
+     * 是否 RecyclerView 发起的滑动
      */
-    private boolean isInitiativeSlide = true;
+    private boolean isRecyclerScroll = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         mRecyclerView.initPageParams(0, DisplayUtil.px2dp(this, DisplayUtil.getScreenWidth(this) / 4)).setUp();
 
-        mViewPager.setOnTouchListener(this);
         mRecyclerView.setOnTouchListener(this);
 
         observe();
@@ -84,15 +83,19 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
-                    int position = mRecyclerView.getScrolledPosition();
-                    mTaskViewModel.imageScrollToPosition(position);
-                }
+//                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+//                    int position = mRecyclerView.getScrolledPosition();
+//                    mTaskViewModel.imageScrollToPosition(position);
+//                }
             }
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if (isRecyclerScroll) {
+                    int position = mRecyclerView.getScrolledPosition();
+                    mTaskViewModel.imageScrollToPosition(position);
+                }
             }
         });
     }
@@ -119,16 +122,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mTaskViewModel.getVideoSlideTask().observe(this, new Observer<Event<Integer>>() {
             @Override
             public void onChanged(Event<Integer> integerEvent) {
-                isInitiativeSlide = false;
                 int position = integerEvent.getContentIfNotHandled();
+                System.out.println("---- [RecyclerView] Video observe position [" + position + "]----");
                 mRecyclerView.smoothScrollToPosition(position);
             }
         });
         mTaskViewModel.getImageSlideTask().observe(this, new Observer<Event<Integer>>() {
             @Override
             public void onChanged(Event<Integer> integerEvent) {
-                isInitiativeSlide = false;
                 int position = integerEvent.getContentIfNotHandled();
+                System.out.println("---- [ViewPager] IMG observe position [" + position + "]----");
                 mViewPager.setCurrentItem(position, true);
             }
         });
@@ -160,12 +163,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        System.out.println("---- onPageScrolled ----");
     }
 
     @Override
     public void onPageSelected(int position) {
-        System.out.println("---- onPageSelected ----");
+        System.out.println("---- [ViewPager] onPageSelected, selected position [" + position + "] ----");
         for (int index = 0; index < mCacheView.size(); index++) {
             MovieView view = mCacheView.get(index);
             if (view == null) {
@@ -178,9 +180,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             }
         }
 
-        if (isInitiativeSlide) {
-            mTaskViewModel.videoScrollToPosition(position);
-        }
+        isRecyclerScroll = false;
+        mTaskViewModel.videoScrollToPosition(position);
     }
 
     @Override
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        isInitiativeSlide = true;
+        isRecyclerScroll = true;
         return false;
     }
 }
