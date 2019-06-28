@@ -23,7 +23,7 @@ import retrofit2.Response;
  */
 public class Download {
 
-    public static final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory() + "/download";
+    private static final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory() + "/download";
 
     public static void download(String url) {
         String path = DOWNLOAD_PATH + getFileNameByUrl(url);
@@ -75,7 +75,7 @@ public class Download {
         return "";
     }
 
-    public static String getFileNameByUrl(String url) {
+    private static String getFileNameByUrl(String url) {
         int firstHalfLength = url.length() / 2;
         String localFilename = String.valueOf(url.substring(0, firstHalfLength).hashCode());
         localFilename += String.valueOf(url.substring(firstHalfLength).hashCode());

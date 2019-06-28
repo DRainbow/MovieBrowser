@@ -35,10 +35,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private PagerAdapter mPagerAdapter;
 
     private List<MovieView> mCacheView = new ArrayList<>();
+    private int mVideoPosition;
 
     private CustomRecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
+    /**
+     * 数据源
+     */
     private List<Movie> mMovieList = new ArrayList<>();
 
     private MovieViewModel mMovieViewModel;
@@ -73,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void initViews() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,
+                false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
         mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
@@ -164,23 +169,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onPageSelected(int position) {
         System.out.println("---- [ViewPager] onPageSelected, selected position [" + position + "] ----");
-        for (int index = 0; index < mCacheView.size(); index++) {
-            MovieView view = mCacheView.get(index);
-            if (view == null) {
-                return;
-            }
-            if (index == position) {
-                view.start();
-            } else {
-                view.pause();
-            }
+
+        MovieView pre = mCacheView.get(mVideoPosition);
+        if (pre != null) {
+            pre.pause();
         }
+        MovieView current = mCacheView.get(position);
+        if (current != null) {
+            current.start();
+        }
+        mVideoPosition = position;
 
         if (!isRecyclerScroll) {
             mTaskViewModel.videoScrollToPosition(position);
         }
 
         isRecyclerScroll = false;
+
     }
 
     @Override

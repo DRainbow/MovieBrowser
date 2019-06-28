@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide;
 import com.cannan.android.moviebrowser.R;
 import com.cannan.android.moviebrowser.data.Movie;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -26,7 +25,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageVH> {
 
     private Context mContext;
 
-    private List<Movie> mMovieList = new ArrayList<>();
+    private List<Movie> mMovieList;
     
     public ImageAdapter(Context context, List<Movie> movieList) {
         mContext = context;
@@ -57,7 +56,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageVH> {
 
         private ImageView mImageView;
 
-        public ImageVH(@NonNull View itemView) {
+        ImageVH(@NonNull View itemView) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.iv_image);
         }

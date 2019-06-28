@@ -26,8 +26,6 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
 
     private CustomItemDecoration mDecoration;
 
-    private SnapHelper mHelper;
-
     public CustomItemDecoration getDecoration() {
         return mDecoration;
     }
@@ -49,13 +47,13 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
     }
 
     public void initListener(OnScrollListener listener, SnapHelper helper) {
-        mScrollManager = new ScrollManager(mContext, this, helper);
+        mScrollManager = new ScrollManager(this, helper);
         mScrollManager.initScrollListener(listener);
     }
 
 
     private void attachDecoration() {
-        mDecoration = new CustomItemDecoration(mContext);
+        mDecoration = new CustomItemDecoration();
         mDecoration.setOnItemSizeMeasuredListener(this);
         addItemDecoration(mDecoration);
     }

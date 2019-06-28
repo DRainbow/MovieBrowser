@@ -1,6 +1,5 @@
 package com.cannan.android.moviebrowser.recycler;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class CustomItemDecoration extends RecyclerView.ItemDecoration {
 
-    private Context mContext;
-
     public int mPageMargin = 0;
 
     public int mHalfWidth = 0;
@@ -27,8 +24,7 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration {
 
     private CustomItemDecoration.OnItemSizeMeasuredListener mOnItemSizeMeasuredListener;
 
-    public CustomItemDecoration(Context context) {
-        mContext = context;
+    public CustomItemDecoration() {
     }
 
     @Override

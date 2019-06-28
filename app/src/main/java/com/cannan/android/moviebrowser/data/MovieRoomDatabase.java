@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.cannan.android.moviebrowser.net.MovieService;
+import com.cannan.android.moviebrowser.net.NetHelper;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,8 +15,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @ClassName: MovieRoomDatabase
@@ -64,11 +63,9 @@ public abstract class MovieRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://private-04a55-videoplayer1.apiary-mock.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            MovieService service = retrofit.create(MovieService.class);
+            MovieService service = NetHelper.getInstance()
+                    .buildRetrofit("http://private-04a55-videoplayer1.apiary-mock.com/")
+                    .create(MovieService.class);
             Call<List<Movie>> call = service.listMoives();
             try {
                 List<Movie> listMovies = call.execute().body();

@@ -23,7 +23,7 @@ import java.io.IOException;
  * @date: 2019-06-25 20:06
  */
 public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedListener,
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, SurfaceHolder.Callback {
 
     private Context mContext;
 
@@ -36,26 +36,6 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
 
     private int surfaceHeight, surfaceWidth;
 
-    private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
-        @Override
-        public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
-        }
-
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            if (mMediaPlayer != null) {
-                mMediaPlayer.setDisplay(holder);
-                measureSize();
-            }
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-        }
-    };
-
     public MovieView(Context context, String url) {
         super(context);
 
@@ -65,7 +45,7 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
         mSurfaceView = findViewById(R.id.sv_item);
 
         holder = mSurfaceView.getHolder();
-        holder.addCallback(mSurfaceCallback);
+        holder.addCallback(this);
 
         mUri = url;
     }
@@ -135,7 +115,7 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
         }
     }
 
-    public void measureSize() {
+    private void measureSize() {
         int mVideoWidth = mMediaPlayer.getVideoWidth();
         int mVideoHeight = mMediaPlayer.getVideoHeight();
 
@@ -151,7 +131,7 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
             System.out.println("---- Video width = " + mVideoWidth + ", height: " + mVideoHeight + " ----");
             System.out.println("---- Surface width = " + surfaceWidth + ", height: " + surfaceHeight + " ----");
 
-            int finalwidth, finalheight = 0;
+            int finalwidth, finalheight;
             if (mVideoWidth * surfaceHeight > surfaceWidth * mVideoHeight) {
                 finalheight = surfaceWidth * mVideoHeight / mVideoWidth;
                 finalwidth = surfaceWidth;
@@ -178,12 +158,9 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
     }
 
     private void getSurfaceRect() {
-        DisplayMetrics dm = new DisplayMetrics();
-        dm = mContext.getApplicationContext().getResources().getDisplayMetrics();
-        int screenWidth = dm.widthPixels;
-        int screenHeight = dm.heightPixels;
-        surfaceHeight = screenHeight;
-        surfaceWidth = screenWidth;
+        DisplayMetrics dm = mContext.getApplicationContext().getResources().getDisplayMetrics();
+        surfaceWidth = dm.widthPixels;
+        surfaceHeight = dm.heightPixels;
     }
 
     @Override
@@ -222,5 +199,23 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setDisplay(holder);
+            measureSize();
+        }
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
     }
 }

@@ -5,7 +5,6 @@ import android.view.ViewGroup;
 
 import com.cannan.android.moviebrowser.MovieView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,7 @@ import androidx.viewpager.widget.PagerAdapter;
  */
 public class VideoAdapter extends PagerAdapter {
 
-    private List<MovieView> mCacheView = new ArrayList<>();
+    private List<MovieView> mCacheView;
 
     public VideoAdapter(List<MovieView> cacheView) {
         mCacheView = cacheView;
