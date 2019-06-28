@@ -34,9 +34,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
 
-    private List<MovieView> mCacheView = new ArrayList<>();
-    private int mVideoPosition;
-
     private CustomRecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
@@ -77,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void initViews() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,
-                false);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
         mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
@@ -110,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             }
         }, mLinearSnapHelper);
 
-        mPagerAdapter = new VideoAdapter(mCacheView);
+        mPagerAdapter = new VideoAdapter(this, mMovieList);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(this);
     }
@@ -155,11 +151,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private void initialData(List<Movie> movies) {
         mMovieList.clear();
         mMovieList.addAll(movies);
-
-        for (Movie movie : movies) {
-            MovieView view = new MovieView(MainActivity.this, movie.getVideoUrl());
-            mCacheView.add(view);
-        }
     }
 
     @Override
@@ -169,17 +160,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onPageSelected(int position) {
         System.out.println("---- [ViewPager] onPageSelected, selected position [" + position + "] ----");
-
-        MovieView pre = mCacheView.get(mVideoPosition);
-        if (pre != null) {
-            pre.pause();
-        }
-        MovieView current = mCacheView.get(position);
-        if (current != null) {
-            current.start();
-        }
-        mVideoPosition = position;
-
         if (!isRecyclerScroll) {
             mTaskViewModel.videoScrollToPosition(position);
         }

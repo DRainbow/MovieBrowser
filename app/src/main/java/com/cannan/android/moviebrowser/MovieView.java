@@ -50,7 +50,13 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
         mUri = url;
     }
 
+    public void setUri(String uri) {
+        mUri = uri;
+    }
+
     public void initMedia() {
+        release();
+
         mMediaPlayer = new MediaPlayer();
 
         try {
@@ -183,21 +189,6 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         System.out.println("---- MovieView onError ----");
-
-        mMediaPlayer.reset();
-        try {
-            String path = Download.getLocalFileIfExist(mUri);
-            if (TextUtils.isEmpty(path)) {
-                System.out.println("---- MovieView Play [" + mUri + "] with net ----");
-                mMediaPlayer.setDataSource(mUri);
-            } else {
-                System.out.println("---- MovieView Play [" + path + "] with local ----");
-                mMediaPlayer.setDataSource(mContext, Uri.parse(path));
-            }
-            mMediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return false;
     }
 
