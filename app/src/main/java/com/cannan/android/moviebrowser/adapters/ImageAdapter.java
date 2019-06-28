@@ -25,6 +25,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageVH> {
 
     private Context mContext;
 
+    /**
+     * 数据源
+     */
     private List<Movie> mMovieList;
     
     public ImageAdapter(Context context, List<Movie> movieList) {

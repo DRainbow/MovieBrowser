@@ -12,7 +12,6 @@ import com.cannan.android.moviebrowser.common.DisplayUtil;
 import com.cannan.android.moviebrowser.data.Movie;
 import com.cannan.android.moviebrowser.recycler.CustomRecyclerView;
 import com.cannan.android.moviebrowser.viewmodels.MovieViewModel;
-import com.cannan.android.moviebrowser.viewmodels.TaskViewModel;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private List<Movie> mMovieList = new ArrayList<>();
 
     private MovieViewModel mMovieViewModel;
-    private TaskViewModel mTaskViewModel;
 
     /**
      * 是否 RecyclerView 发起的滑动
@@ -74,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void initViews() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,
+                false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
         mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
@@ -94,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 if (RecyclerView.SCROLL_STATE_IDLE == newState) {
                     if (isRecyclerScroll) {
                         int position = mRecyclerView.getScrolledPosition();
-                        mTaskViewModel.imageScrollToPosition(position);
-
+                        mViewPager.setCurrentItem(position, true);
                     }
                 }
             }
@@ -128,24 +126,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 mAdapter.notifyDataSetChanged();
             }
         });
-
-        mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        mTaskViewModel.getVideoSlideTask().observe(this, new Observer<Event<Integer>>() {
-            @Override
-            public void onChanged(Event<Integer> integerEvent) {
-                int position = integerEvent.getContentIfNotHandled();
-                System.out.println("---- [RecyclerView] Video observe position [" + position + "]----");
-                mRecyclerView.smoothScrollToPosition(position);
-            }
-        });
-        mTaskViewModel.getImageSlideTask().observe(this, new Observer<Event<Integer>>() {
-            @Override
-            public void onChanged(Event<Integer> integerEvent) {
-                int position = integerEvent.getContentIfNotHandled();
-                System.out.println("---- [ViewPager] IMG observe position [" + position + "]----");
-                mViewPager.setCurrentItem(position, true);
-            }
-        });
     }
 
     private void initialData(List<Movie> movies) {
@@ -161,11 +141,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public void onPageSelected(int position) {
         System.out.println("---- [ViewPager] onPageSelected, selected position [" + position + "] ----");
         if (!isRecyclerScroll) {
-            mTaskViewModel.videoScrollToPosition(position);
+            mRecyclerView.smoothScrollToPosition(position);
         }
 
         isRecyclerScroll = false;
-
     }
 
     @Override

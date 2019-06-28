@@ -19,9 +19,20 @@ import retrofit2.http.Url;
  */
 public interface MovieService {
 
+    /**
+     * 获取所有的 Movie 数据
+     *
+     * @return
+     */
     @GET("pictures")
     Call<List<Movie>> listMoives();
 
+    /**
+     * 下载
+     *
+     * @param fileUrl
+     * @return
+     */
     @Streaming
     @GET
     Call<ResponseBody> download(@Url String fileUrl);
