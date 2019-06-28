@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -35,6 +36,78 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private CustomRecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
+    private SnapHelper mHelper;
+    private int mSnapPosition = 0;
+
+    private RecyclerView.OnScrollListener mScrollListener = new RecyclerView.OnScrollListener() {
+
+        private int mConsumeX = 0;
+
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+
+            if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+                if (isRecyclerScroll) {
+                    mViewPager.setCurrentItem(mSnapPosition, true);
+                }
+            }
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            mConsumeX += dx;
+            onScrolledChangedCallback();
+        }
+
+        /**
+         * view 大小随位移事件变化
+         */
+        private void onScrolledChangedCallback() {
+            int mOnePageWidth = mRecyclerView.getDecoration().mItemConsumeX;
+
+            if (mOnePageWidth <= 0) {
+                return;
+            }
+
+            RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
+            View snapView = mHelper.findSnapView(manager);
+            if (snapView == null) {
+                return;
+            }
+            mSnapPosition = manager.getPosition(snapView);
+
+            int offset = mConsumeX - mSnapPosition * mOnePageWidth;
+            float percent = (float) Math.max(Math.abs(offset) * 1.0 / mOnePageWidth, 0.0001);
+
+            View leftView = null;
+            View currentView;
+            View rightView = null;
+            if (mSnapPosition > 0) {
+                leftView = mRecyclerView.getLayoutManager().findViewByPosition(mSnapPosition - 1);
+            }
+            currentView = mRecyclerView.getLayoutManager().findViewByPosition(mSnapPosition);
+            if (mSnapPosition < mRecyclerView.getAdapter().getItemCount() - 1) {
+                rightView = mRecyclerView.getLayoutManager().findViewByPosition(mSnapPosition + 1);
+            }
+
+            // 缩放比
+            float scale = 0.4f;
+            if (leftView != null) {
+                leftView.setScaleY((1 - scale) + percent * scale);
+                leftView.setScaleY((1 - scale) + percent * scale);
+            }
+            if (currentView != null) {
+                currentView.setScaleX(1 - percent * scale);
+                currentView.setScaleY(1 - percent * scale);
+            }
+            if (rightView != null) {
+                rightView.setScaleX((1 - scale) + percent * scale);
+                rightView.setScaleY((1 - scale) + percent * scale);
+            }
+        }
+    };
 
     /**
      * 数据源
@@ -79,30 +152,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mAdapter = new ImageAdapter(MainActivity.this, mMovieList);
         mRecyclerView.setAdapter(mAdapter);
 
-        final LinearSnapHelper mLinearSnapHelper = new LinearSnapHelper();
-        mLinearSnapHelper.attachToRecyclerView(mRecyclerView);
+        mHelper = new LinearSnapHelper();
+        mHelper.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.initPageParams(0, DisplayUtil.px2dp(this, DisplayUtil.getScreenWidth(this) / 4)).setUp();
 
         mRecyclerView.setOnTouchListener(this);
-        mRecyclerView.initListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
-                    if (isRecyclerScroll) {
-                        int position = mRecyclerView.getScrolledPosition();
-                        mViewPager.setCurrentItem(position, true);
-                    }
-                }
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        }, mLinearSnapHelper);
+        mRecyclerView.addOnScrollListener(mScrollListener);
 
         mPagerAdapter = new VideoAdapter(this, mMovieList);
         mViewPager.setAdapter(mPagerAdapter);

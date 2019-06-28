@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
 
 /**
  * @ClassName: CustomRecyclerView
@@ -15,14 +14,10 @@ import androidx.recyclerview.widget.SnapHelper;
  */
 public class CustomRecyclerView extends RecyclerView implements CustomItemDecoration.OnItemSizeMeasuredListener {
 
-    private Context mContext;
-
     /**
      * RecyclerView 初始展示位置
      */
     private int mInitPos = 0;
-
-    private ScrollManager mScrollManager;
 
     private CustomItemDecoration mDecoration;
 
@@ -32,38 +27,21 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
 
     public CustomRecyclerView(Context context) {
         this(context, null);
-        mContext = context;
     }
 
     public CustomRecyclerView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
-        mContext = context;
     }
 
     public CustomRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mContext = context;
         attachDecoration();
     }
-
-    public void initListener(OnScrollListener listener, SnapHelper helper) {
-        mScrollManager = new ScrollManager(this, helper);
-        mScrollManager.initScrollListener(listener);
-    }
-
 
     private void attachDecoration() {
         mDecoration = new CustomItemDecoration();
         mDecoration.setOnItemSizeMeasuredListener(this);
         addItemDecoration(mDecoration);
-    }
-
-    public int getScrolledPosition() {
-        if (mScrollManager == null) {
-            return 0;
-        } else {
-            return mScrollManager.getPosition();
-        }
     }
 
     /**
@@ -77,7 +55,6 @@ public class CustomRecyclerView extends RecyclerView implements CustomItemDecora
         }
 
         smoothScrollToPosition(0);
-        mScrollManager.updateConsume();
         return this;
     }
 
