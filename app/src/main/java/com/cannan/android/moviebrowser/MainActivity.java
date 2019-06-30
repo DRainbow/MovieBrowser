@@ -10,7 +10,7 @@ import com.cannan.android.moviebrowser.adapters.ImageAdapter;
 import com.cannan.android.moviebrowser.adapters.VideoAdapter;
 import com.cannan.android.moviebrowser.common.DisplayUtil;
 import com.cannan.android.moviebrowser.data.Movie;
-import com.cannan.android.moviebrowser.recycler.CustomRecyclerView;
+import com.cannan.android.moviebrowser.recycler.CustomItemDecoration;
 import com.cannan.android.moviebrowser.viewmodels.MovieViewModel;
 import com.google.gson.Gson;
 
@@ -29,13 +29,14 @@ import androidx.recyclerview.widget.SnapHelper;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnTouchListener {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnTouchListener, CustomItemDecoration.OnItemSizeMeasuredListener {
 
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
 
-    private CustomRecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
+    private CustomItemDecoration mDecoration;
     private SnapHelper mHelper;
     private int mSnapPosition = 0;
 
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
          * view 大小随位移事件变化
          */
         private void onScrolledChangedCallback() {
-            int mOnePageWidth = mRecyclerView.getDecoration().mItemConsumeX;
+            int mOnePageWidth = mDecoration.mItemConsumeX;
 
             if (mOnePageWidth <= 0) {
                 return;
@@ -121,6 +122,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
      */
     private boolean isRecyclerScroll = false;
 
+    /**
+     * 是否首次获得测量结果
+     */
+    private boolean isFirstMeasured = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,7 +161,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mHelper = new LinearSnapHelper();
         mHelper.attachToRecyclerView(mRecyclerView);
 
-        mRecyclerView.initPageParams(0, DisplayUtil.px2dp(this, DisplayUtil.getScreenWidth(this) / 4)).setUp();
+        mDecoration = new CustomItemDecoration();
+        mDecoration.mPageMargin = 0;
+        mDecoration.mHalfWidth = DisplayUtil.px2dp(this, DisplayUtil.getScreenWidth(this) / 4);
+        mDecoration.setOnItemSizeMeasuredListener(this);
+        mRecyclerView.addItemDecoration(mDecoration);
 
         mRecyclerView.setOnTouchListener(this);
         mRecyclerView.addOnScrollListener(mScrollListener);
@@ -211,5 +221,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public boolean onTouch(View v, MotionEvent event) {
         isRecyclerScroll = true;
         return false;
+    }
+
+    @Override
+    public void onItemSizeMeasured(int size) {
+        if (isFirstMeasured) {
+            mRecyclerView.scrollToPosition(0);
+        }
+        isFirstMeasured = false;
     }
 }
