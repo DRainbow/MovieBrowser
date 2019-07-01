@@ -1,9 +1,10 @@
 package com.cannan.android.moviebrowser.data;
 
-import android.app.Application;
 import android.os.AsyncTask;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import androidx.lifecycle.LiveData;
 
@@ -19,9 +20,9 @@ public class MovieRepository {
 
     private LiveData<List<Movie>> mAllMovies;
 
-    public MovieRepository(Application application) {
-        MovieRoomDatabase db = MovieRoomDatabase.getDatabase(application);
-        mMovieDao = db.movieDao();
+    @Inject
+    public MovieRepository(MovieDao movieDao) {
+        mMovieDao = movieDao;
         mAllMovies = mMovieDao.getMovies();
     }
 

@@ -30,4 +30,5 @@ ext {
     roomVersion = '2.1.0-alpha06'
     archLifecycleVersion = '2.0.0'
     retrofitVersion = '2.6.0'
+    daggerVersion = '2.23.2'
 }
