@@ -60,11 +60,11 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
         mMediaPlayer = new MediaPlayer();
 
         try {
-            String path = Download.getLocalFileIfExist(mUri);
+            String path = Download.getInstance().getLocalFileIfExist(mUri);
             if (TextUtils.isEmpty(path)) {
                 System.out.println("---- MovieView Play [" + mUri + "] with net ----");
                 mMediaPlayer.setDataSource(mUri);
-                Download.download(mUri);
+                Download.getInstance().download(mUri);
             } else {
                 System.out.println("---- MovieView Play [" + path + "] with local ----");
                 mMediaPlayer.setDataSource(mContext, Uri.parse(path));

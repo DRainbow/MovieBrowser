@@ -19,6 +19,8 @@ import retrofit2.http.Url;
  */
 public interface MovieService {
 
+    String BASE_URL = "http://private-04a55-videoplayer1.apiary-mock.com/";
+
     /**
      * 获取所有的 Movie 数据
      *

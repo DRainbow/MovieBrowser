@@ -3,11 +3,13 @@ package com.cannan.android.moviebrowser.data;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.cannan.android.moviebrowser.net.MovieService;
-import com.cannan.android.moviebrowser.net.NetHelper;
+import com.cannan.android.moviebrowser.di.component.DaggerNetComponent;
+import com.cannan.android.moviebrowser.di.module.NetModule;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -53,9 +55,12 @@ public abstract class MovieRoomDatabase extends RoomDatabase {
         }
     };
 
-    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
+    public static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
         private final MovieDao mDao;
+
+        @Inject
+        Call<List<Movie>> mCall;
 
         PopulateDbAsync(MovieRoomDatabase db) {
             mDao = db.movieDao();
@@ -63,12 +68,9 @@ public abstract class MovieRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-            MovieService service = NetHelper.getInstance()
-                    .buildRetrofit("http://private-04a55-videoplayer1.apiary-mock.com/")
-                    .create(MovieService.class);
-            Call<List<Movie>> call = service.listMoives();
             try {
-                List<Movie> listMovies = call.execute().body();
+                DaggerNetComponent.builder().netModule(new NetModule("")).build().inject(this);
+                List<Movie> listMovies = mCall.execute().body();
                 System.out.println("Retrofit execute has success!");
                 mDao.insert(listMovies);
             } catch (IOException e) {
