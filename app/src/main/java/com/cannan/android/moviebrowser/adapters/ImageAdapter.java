@@ -46,7 +46,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageVH> {
     public void onBindViewHolder(@NonNull ImageVH holder, int position) {
         Glide.with(mContext.getApplicationContext())
                 .load(mMovieList.get(position).getImageUrl())
-                .fitCenter()
+                .placeholder(R.drawable.ic_android_black_24dp)
+                .thumbnail(0.2f)
                 .into(holder.mImageView);
     }
 
