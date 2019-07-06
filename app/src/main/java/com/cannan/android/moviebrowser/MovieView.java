@@ -192,6 +192,7 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         System.out.println("---- MovieView#SurfaceView created ----");
+        initMedia();
     }
 
     @Override
