@@ -55,6 +55,8 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
     }
 
     public void initMedia() {
+        mSurfaceView.setVisibility(VISIBLE);
+
         release();
 
         mMediaPlayer = new MediaPlayer();
@@ -82,19 +84,14 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
-        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            measureSize();
-        }
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            measureSize();
-        }
+        measureSize();
     }
 
     public void stop() {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
         }
+        mSurfaceView.setVisibility(GONE);
     }
 
     public void pause() {
@@ -194,19 +191,20 @@ public class MovieView extends FrameLayout implements MediaPlayer.OnPreparedList
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        System.out.println("---- MovieView#SurfaceView created ----");
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        System.out.println("---- MovieView#SurfaceView changed ----");
         if (mMediaPlayer != null) {
             mMediaPlayer.setDisplay(holder);
-            measureSize();
         }
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        System.out.println("---- MovieView#SurfaceView destroyed ----");
+        release();
     }
 }

@@ -69,6 +69,7 @@ public class VideoAdapter extends PagerAdapter {
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         MovieView movieView = (MovieView) object;
+        movieView.stop();
         container.removeView(movieView);
         mCacheView.offer(movieView);
     }
